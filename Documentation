@@ -1,0 +1,170 @@
+Peer-to-Peer Chatting Application with Digital Signatures
+1. Title Page
+Project Title: Peer-to-Peer Chatting Application with Digital Signatures
+Course Name and Code: Cryptography and Network Security  (MCA21206DCE)
+Teacher's Name: DR. Gulnawaz Gani
+Your Name: Safan Shafat
+Date of Submission: 11-06-2024
+2. Table of Contents
+Title Page
+Table of Contents
+Introduction
+Objectives
+System Design
+5.1 Architecture
+5.2 Use Case Diagram
+5.3 Sequence Diagrams
+Implementation
+6.1 Technologies Used
+6.2 Development Environment
+6.3 Code Structure
+6.4 Key Code Snippets
+Database Design
+7.1 Schema
+7.2 Tables and Relationships
+Digital Signature Integration
+8.1 Signing Messages
+8.2 Verifying Messages
+8.3 Password Storage
+Testing
+9.1 Test Cases
+9.2 Test Results
+User Guide
+10.1 Installation Instructions
+10.2 How to Use the Application
+Conclusion
+Future Work
+References
+3. Introduction
+The Peer-to-Peer Chatting Application with Digital Signatures project aims to create a secure messaging system that ensures message integrity and authenticity through digital signatures. The application enables users to register, log in, and communicate with each other in a peer-to-peer network, leveraging RSA for digital signatures and SHA-256 for password hashing.
+4. Objectives
+Develop a secure peer-to-peer chatting application.
+Implement digital signatures for message integrity and authenticity.
+Use SHA-256 for secure password storage.
+Ensure ease of use and robust communication between peers.
+5. System Design
+5.1 Architecture
+The system uses a client-server model where a central server handles user registration and authentication. After logging in, peers can communicate directly with each other using sockets. Digital signatures are used to sign and verify messages, ensuring authenticity and integrity.
+5.2 Use Case Diagram
+5.3 Sequence Diagrams
+User Registration
+User -> P2PServer: REGISTER username password
+P2PServer -> Database: store user credentials
+P2PServer -> User: Registration successful
+
+
+User Login
+User -> P2PServer: LOGIN username password
+P2PServer -> Database: validate credentials
+P2PServer -> User: Login successful
+
+
+Message Exchange
+User1 -> Peer1: send message
+Peer1 -> Peer2: signed message
+Peer2 -> Peer1: verify signature
+Peer2 -> User1: message received
+6. Implementation
+6.1 Technologies Used
+Programming Languages: Python
+Libraries: socket, threading, json, hashlib, sympy, sqlite3
+Tools: SQLite for database, RSA for cryptography
+6.2 Development Environment
+Hardware: Development done on a standard personal computer.
+Software: Python 3.x, SQLite, code editor Visual Studio Code
+6.3 Code Structure
+peer.py: Handles peer communication and RSA operations.
+server.py: Manages user registration and login.
+database.py: Manages database setup and user/message operations.
+rsa.py: Contains functions for RSA key generation, encryption, decryption, and digital signatures.
+6.4 Key Code Snippets
+Server Initialization
+class P2PServer:
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.peers = []
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ...
+
+User Registration
+def register_user(username, password):
+    conn = sqlite3.connect('chat_app.db')
+    c = conn.cursor()
+    try:
+        c.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', (username, hash_password(password)))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    finally:
+        conn.close()
+
+Message Signing
+def sign_rsa(private_key, username):
+    username_hash = hash_username(username)
+    return encrypt_rsa(private_key, username_hash)
+
+Interface Screenshot
+7. Database Design
+7.1 Schema
+The database consists of two tables: users and messages.
+7.2 Tables and Relationships
+Users Table:
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password_hash TEXT
+);
+
+
+Messages Table:
+CREATE TABLE messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    message TEXT
+);
+
+
+8. Digital Signature Integration
+8.1 Signing Messages
+Messages are signed using RSA private keys. The hash of the username is encrypted to create the signature.
+8.2 Verifying Messages
+Incoming messages are verified by decrypting the signature with the sender's public key and comparing the hash with the expected value.
+8.3 Password Storage
+Passwords are hashed using SHA-256 before being stored in the database:
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+9. Testing
+9.1 Test Cases
+Registration Test: Ensure new users can register.
+Login Test: Validate login functionality with correct and incorrect credentials.
+Message Test: Verify that messages are correctly sent, signed, and verified.
+9.2 Test Results
+Registration Test: Passed
+Login Test: Passed
+Message Test: Passed
+10. User Guide
+10.1 Installation Instructions
+Clone the repository.
+Install required libraries: pip install -r requirements.txt.
+Set up the database: python database.py.
+Run the server: python server.py.
+Run the peer client: python peer.py.
+10.2 How to Use the Application
+Register a new user.
+Log in with your credentials.
+Connect to peers and start sending messages.
+11. Conclusion
+The project successfully implements a secure peer-to-peer chatting application with digital signatures, ensuring message integrity and authenticity. The application allows users to register, log in, and communicate securely.
+12. Future Work
+Implement encrypted message storage.
+Add a graphical user interface.
+Enhance error handling and logging.
+13. References
+Python Documentation
+SQLite Documentation
+RSA Cryptography
+
